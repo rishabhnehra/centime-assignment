@@ -1,0 +1,11 @@
+{
+  "addEntry": "प्रविष्टि जोड़ें",
+  "source": "स्रोत",
+  "target": "लक्ष्य",
+  "value": "मूल्य",
+  "sourcePlaceholder": "स्रोत दर्ज करें",
+  "targetPlaceholder": "लक्ष्य दर्ज करें",
+  "valuePlaceholder": "मान दर्ज करें",
+  "saveChange": "परिवर्तन को सहेजें",
+  "enterDetails": "विवरण दर्ज करें"
+}
