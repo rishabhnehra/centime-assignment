@@ -50,6 +50,7 @@ export const Form = ({ onSubmit }: { onSubmit: SubmitHandler<Data> }) => {
         <Button className="mt-4" type="submit">
           {t("saveChange")}
         </Button>
+        {/* <Input type="submit" name="saveChange" /> */}
       </div>
     </form>
   );

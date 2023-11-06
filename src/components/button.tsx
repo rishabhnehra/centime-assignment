@@ -22,7 +22,7 @@ export const Button = ({
         "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
       size === "default" && "h-10 px-4 py-2",
       size === "icon" && "h-10 w-10",
-      className
+      className,
     )}
     {...props}
   />

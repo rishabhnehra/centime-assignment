@@ -13,7 +13,7 @@ export const Input = forwardRef<
   return (
     <div>
       {props.label ? (
-        <label htmlFor={props.name} className="block mb-1 text-sm font-medium">
+        <label htmlFor={props.name} className="mb-1 block text-sm font-medium">
           {t(props.label)}
         </label>
       ) : null}

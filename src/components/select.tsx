@@ -3,7 +3,7 @@ import { SelectHTMLAttributes } from "react";
 export const Select = (
   props: SelectHTMLAttributes<HTMLSelectElement> & {
     options: { label: string; value: string }[];
-  }
+  },
 ) => (
   <select
     {...props}

@@ -17,26 +17,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./components/dialog";
-import { Data } from "./types/data";
 import { Chart } from "./components/chart";
 import { Form } from "./components/form";
 import { useTranslation } from "react-i18next";
+import { useAnalytics } from "./hooks/useAnalytics";
 
 function App() {
   const { t, i18n } = useTranslation();
-  const [data, setData] = useState<Data[]>([]);
+  const { data, setData } = useAnalytics();
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    fetch("http://localhost:5173/api/users/1/analytics")
-      .then((response) => response.json())
-      .then((data) => setData(data));
-  }, []);
-
-  const handleDelete = (id: number) =>
-    setData((data) => {
-      return data.filter((d) => d.id !== id);
-    });
+  const handleDelete = (id: number) => {
+    setData(data.filter((d) => d.id !== id));
+  };
 
   return (
     <div className="h-screen">
@@ -50,8 +43,8 @@ function App() {
           ]}
         />
       </NavBar>
-      <div className="flex p-5 gap-4">
-        <div className="flex flex-col flex-none gap-4">
+      <div className="flex justify-center gap-12  p-5">
+        <div className="flex flex-none flex-col gap-4">
           <Button onClick={() => setOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             {t("addEntry")}
@@ -70,20 +63,21 @@ function App() {
                     ];
                     return newData;
                   });
+                  setOpen(false);
                 }}
               />
             </DialogContent>
           </Dialog>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("source")}</TableHead>
-                <TableHead>{t("target")}</TableHead>
-                <TableHead>{t("value")}</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            {data.length > 0 ? (
+          {data.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("source")}</TableHead>
+                  <TableHead>{t("target")}</TableHead>
+                  <TableHead>{t("value")}</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
               <TableBody>
                 {data.map((entry) => (
                   <TableRow key={entry.id}>
@@ -106,12 +100,12 @@ function App() {
                   </TableRow>
                 ))}
               </TableBody>
-            ) : (
-              <p>{t("nothingToShow")}</p>
-            )}
-          </Table>
+            </Table>
+          ) : (
+            <p>{t("nothingToShow")}</p>
+          )}
         </div>
-        <div className="flex-auto">
+        <div className="basis-[600px]">
           {data.length > 0 ? <Chart data={data} /> : null}
         </div>
       </div>
