@@ -1,18 +1,15 @@
-import { expect, afterEach, beforeAll, afterAll } from "vitest";
 import { setupServer } from "msw/node";
-import { cleanup } from "@testing-library/react";
 import { handlers } from "../mocks/handlers";
-import * as matchers from "@testing-library/jest-dom/matchers";
-
-expect.extend(matchers);
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 const server = setupServer(...handlers);
 
-server.events.on("request:start", ({ request }) => {
-  console.log("MSW intercepted:", request.method, request.url);
-});
+// server.events.on("request:start", ({ request }) => {
+//   console.log("MSW intercepted:", request.method, request.url);
+// });
 
-beforeAll(() => server.listen());
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 afterEach(() => {
   cleanup();
