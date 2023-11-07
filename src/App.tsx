@@ -50,7 +50,13 @@ function App() {
             <Plus className="mr-2 h-4 w-4" />
             {t("addEntry")}
           </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog
+            open={open}
+            onOpenChange={() => {
+              setId(undefined);
+              setOpen(false);
+            }}
+          >
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{t("enterDetails")}</DialogTitle>
