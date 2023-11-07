@@ -5,13 +5,20 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { useTranslation } from "react-i18next";
 
-export const Form = ({ onSubmit }: { onSubmit: SubmitHandler<Data> }) => {
+export const Form = ({
+  onSubmit,
+  formData,
+}: {
+  onSubmit: SubmitHandler<Data>;
+  formData?: Data;
+}) => {
   const { t } = useTranslation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<Data>({
+    defaultValues: formData,
     resolver: zodResolver(DataSchema),
   });
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./components/button";
 import { NavBar } from "./components/navbar";
 import { Select } from "./components/select";
@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "./components/table";
-import { Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import { useAnalytics } from "./hooks/useAnalytics";
 function App() {
   const { t, i18n } = useTranslation();
   const { data, setData } = useAnalytics();
+  const [id, setId] = useState<number>();
   const [open, setOpen] = useState(false);
 
   const handleDelete = (id: number) => {
@@ -55,15 +56,18 @@ function App() {
                 <DialogTitle>{t("enterDetails")}</DialogTitle>
               </DialogHeader>
               <Form
-                onSubmit={(data) => {
+                formData={data.find((d) => d.id === id)}
+                onSubmit={(newData) => {
                   setData((oldData) => {
-                    const newData = [
-                      ...oldData,
-                      { id: oldData.length + 1, ...data },
-                    ];
-                    return newData;
+                    if (newData.id !== undefined) {
+                      return oldData.map((data) =>
+                        data.id === id ? { ...data, ...newData } : data,
+                      );
+                    }
+                    return [...oldData, { id: oldData.length + 1, ...newData }];
                   });
                   setOpen(false);
+                  setId(undefined);
                 }}
               />
             </DialogContent>
@@ -86,6 +90,7 @@ function App() {
                     <TableData>{entry.value}</TableData>
                     <TableData>
                       <Button
+                        aria-label="delete"
                         variant="outline"
                         size="icon"
                         onClick={() => {
@@ -95,6 +100,18 @@ function App() {
                         }}
                       >
                         <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        aria-label="edit"
+                        className="ml-2"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          setOpen(true);
+                          setId(entry.id);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
                       </Button>
                     </TableData>
                   </TableRow>

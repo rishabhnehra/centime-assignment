@@ -1,5 +1,4 @@
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
@@ -10,20 +9,16 @@ import App from "./App";
 import { analytics } from "./mocks/handlers";
 
 describe("App", () => {
-  it("renders nav", () => {
+  it("should render nav", () => {
     render(<App />);
     expect(screen.getByText(/Centime/i)).toBeVisible();
   });
 
-  it("renders table after api call", async () => {
+  it("should render table after api call", async () => {
     render(<App />);
 
     await waitFor(async () => {
-      analytics.forEach((analytic) => {
-        expect(screen.queryAllByText(analytic.source)[0]).toBeInTheDocument();
-        expect(screen.queryAllByText(analytic.target)[0]).toBeInTheDocument();
-        expect(screen.getByText(analytic.value)).toBeInTheDocument();
-      });
+      expect(screen.getAllByRole("row").length).toBe(5);
     });
   });
 
@@ -48,7 +43,7 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("should update table on new data entrt", async () => {
+  it("should update table on new data entry", async () => {
     const SOURCE_TEXT = "test-source";
     const TARGET_TEXT = "test-target";
     const VALUE_NUMBER = "123";
@@ -70,6 +65,54 @@ describe("App", () => {
 
     await user.type(value, VALUE_NUMBER);
     expect(value).toHaveValue(+VALUE_NUMBER);
+
+    await user.click(screen.getByText("saveChange"));
+
+    await waitFor(() => {
+      expect(screen.getByText(SOURCE_TEXT)).toBeInTheDocument();
+      expect(screen.getByText(TARGET_TEXT)).toBeInTheDocument();
+      expect(screen.getByText(VALUE_NUMBER)).toBeInTheDocument();
+    });
+  });
+  it("should update table on deleting data entry", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
+
+    expect(screen.getAllByRole("row").length).toBe(5);
+    await user.click(screen.getAllByRole("button", { name: "delete" })[0]);
+    expect(screen.getAllByRole("row").length).toBe(4);
+  });
+  it("should update table on updating data entry", async () => {
+    const SOURCE_TEXT = "edit-source";
+    const TARGET_TEXT = "edit-target";
+    const VALUE_NUMBER = "100";
+    const user = userEvent.setup();
+    render(<App />);
+
+    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
+
+    await user.click(screen.getAllByRole("button", { name: "edit" })[0]);
+
+    const source = screen.getByRole("textbox", { name: "source" });
+    const target = screen.getByRole("textbox", { name: "target" });
+    const value = screen.getByRole("spinbutton");
+
+    expect(source).toHaveValue(analytics[0].source);
+    expect(target).toHaveValue(analytics[0].target);
+    expect(value).toHaveValue(analytics[0].value);
+
+    await user.clear(source);
+    await user.type(source, SOURCE_TEXT);
+    expect(source).toHaveValue(SOURCE_TEXT);
+
+    await user.clear(target);
+    await user.type(target, TARGET_TEXT);
+    expect(target).toHaveValue(TARGET_TEXT);
+
+    await user.clear(value);
+    await user.type(value, VALUE_NUMBER);
 
     await user.click(screen.getByText("saveChange"));
 
