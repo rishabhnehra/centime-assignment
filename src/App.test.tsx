@@ -1,4 +1,5 @@
 import {
+  cleanup,
   render,
   screen,
   waitFor,
@@ -7,15 +8,24 @@ import {
 import { userEvent } from "@testing-library/user-event";
 import App from "./App";
 import { analytics } from "./mocks/handlers";
+import { Provider } from "react-redux";
+import { store } from "./store";
+
+const customRender = () =>
+  render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+  );
 
 describe("App", () => {
   it("should render nav", () => {
-    render(<App />);
+    customRender();
     expect(screen.getByText(/Centime/i)).toBeVisible();
   });
 
   it("should render table after api call", async () => {
-    render(<App />);
+    customRender();
 
     await waitFor(async () => {
       expect(screen.getAllByRole("row").length).toBe(5);
@@ -24,9 +34,8 @@ describe("App", () => {
 
   it("should show error on empty form submission", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    customRender();
 
-    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
     await user.click(screen.getByRole("button", { name: "addEntry" }));
 
     expect(screen.getByText("enterDetails")).toBeInTheDocument();
@@ -48,9 +57,9 @@ describe("App", () => {
     const TARGET_TEXT = "test-target";
     const VALUE_NUMBER = "123";
     const user = userEvent.setup();
-    render(<App />);
+    customRender();
 
-    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
+    // await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
     await user.click(screen.getByRole("button", { name: "addEntry" }));
 
     const source = screen.getByRole("textbox", { name: "source" });
@@ -76,22 +85,23 @@ describe("App", () => {
   });
   it("should update table on deleting data entry", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    customRender();
 
-    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
+    const rows = screen.getAllByRole("row");
+    const buttons = screen.getAllByRole("button", { name: "delete" });
+    expect(rows.length).toBe(5);
 
-    expect(screen.getAllByRole("row").length).toBe(5);
-    await user.click(screen.getAllByRole("button", { name: "delete" })[0]);
-    expect(screen.getAllByRole("row").length).toBe(4);
+    await user.click(buttons[0]);
+    expect(screen.queryAllByRole("row").length).toBe(4);
   });
   it("should update table on updating data entry", async () => {
     const SOURCE_TEXT = "edit-source";
     const TARGET_TEXT = "edit-target";
     const VALUE_NUMBER = "100";
     const user = userEvent.setup();
-    render(<App />);
+    customRender();
 
-    await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
+    // await waitForElementToBeRemoved(() => screen.queryByText("nothingToShow"));
 
     await user.click(screen.getAllByRole("button", { name: "edit" })[0]);
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./components/button";
 import { NavBar } from "./components/navbar";
 import { Select } from "./components/select";
@@ -20,17 +20,21 @@ import {
 import { Chart } from "./components/chart";
 import { Form } from "./components/form";
 import { useTranslation } from "react-i18next";
-import { useAnalytics } from "./hooks/useAnalytics";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./store";
+import { add, getAnalyticsData, remove, update } from "./slices/analyticsSlice";
 
 function App() {
   const { t, i18n } = useTranslation();
-  const { data, setData } = useAnalytics();
+  const data = useSelector((store: RootState) => store.analytics);
+  const dispatch = useDispatch<AppDispatch>();
   const [id, setId] = useState<number>();
   const [open, setOpen] = useState(false);
 
-  const handleDelete = (id: number) => {
-    setData(data.filter((d) => d.id !== id));
-  };
+  useEffect(() => {
+    dispatch(getAnalyticsData());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="h-screen">
@@ -50,13 +54,7 @@ function App() {
             <Plus className="mr-2 h-4 w-4" />
             {t("addEntry")}
           </Button>
-          <Dialog
-            open={open}
-            onOpenChange={() => {
-              setId(undefined);
-              setOpen(false);
-            }}
-          >
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>{t("enterDetails")}</DialogTitle>
@@ -64,16 +62,12 @@ function App() {
               <Form
                 formData={data.find((d) => d.id === id)}
                 onSubmit={(newData) => {
-                  setData((oldData) => {
-                    if (newData.id !== undefined) {
-                      return oldData.map((data) =>
-                        data.id === id ? { ...data, ...newData } : data,
-                      );
-                    }
-                    return [...oldData, { id: oldData.length + 1, ...newData }];
-                  });
-                  setOpen(false);
                   setId(undefined);
+                  setOpen(false);
+                  if (newData.id !== undefined) {
+                    return dispatch(update(newData));
+                  }
+                  dispatch(add(newData));
                 }}
               />
             </DialogContent>
@@ -101,7 +95,7 @@ function App() {
                         size="icon"
                         onClick={() => {
                           if (entry?.id) {
-                            handleDelete(entry.id);
+                            return dispatch(remove(entry.id));
                           }
                         }}
                       >

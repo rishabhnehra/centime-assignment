@@ -1,11 +1,12 @@
 {
-    "addEntry": "Add Entry",
-    "source": "Source",
-    "target": "Target",
-    "value": "Value",
-    "sourcePlaceholder": "Enter source",
-    "targetPlaceholder": "Enter target",
-    "valuePlaceholder": "Enter value",
-    "saveChange": "Save change",
-    "enterDetails": "Enter details"
+  "addEntry": "Add Entry",
+  "source": "Source",
+  "target": "Target",
+  "value": "Value",
+  "sourcePlaceholder": "Enter source",
+  "targetPlaceholder": "Enter target",
+  "valuePlaceholder": "Enter value",
+  "saveChange": "Save change",
+  "enterDetails": "Enter details",
+  "nothingToShow": "Nothing to show"
 }
